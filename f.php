@@ -1,8 +1,19 @@
-// Vulnerable PHP code snippet
-<?php
-    $lang = $_GET['lang'];
-    include($lang . '.php');
+// Vulnerable code
+// $file = $_GET['file'];
+// include($file . '.php');
 
-    $cmd = $_GET['cmd'];
-    exec($cmd);
-?>
+// Fixed code
+$file = filter_var($_GET['file'], FILTER_SANITIZE_STRING);
+$allowedFiles = array('file1', 'file2', 'file3'); // whitelist
+$fileExtension = '.php'; // only allow PHP files
+
+if (in_array($file, $allowedFiles)) {
+    $filePath = __DIR__ . DIRECTORY_SEPARATOR . $file . $fileExtension;
+    if (file_exists($filePath)) {
+        include($filePath);
+    } else {
+        echo 'File not found';
+    }
+} else {
+    echo 'Invalid file';
+}
